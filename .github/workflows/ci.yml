@@ -1,0 +1,55 @@
+name: MOGA smoke test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.py"
+      - "requirements.txt"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "**.py"
+      - "requirements.txt"
+      - ".github/workflows/ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile Python sources
+        run: python -m compileall -q .
+
+      - name: Run small ZDT1 benchmark
+        run: |
+          python run_experiments.py \
+            --problems ZDT1 \
+            --dims 10 \
+            --algorithms moga moga_bonus \
+            --max-evals 2000 \
+            --n-runs 1 \
+            --workers 1 \
+            --out-dir /tmp/moga-smoke
+
+      - name: Verify smoke-test outputs
+        run: |
+          test -s /tmp/moga-smoke/raw_runs.csv
+          test -s /tmp/moga-smoke/summary.csv
+          test -s /tmp/moga-smoke/required_tables/gd_D10_MOGA_only.csv
+          test -s /tmp/moga-smoke/required_tables/igd_D10_MOGA_only.csv
