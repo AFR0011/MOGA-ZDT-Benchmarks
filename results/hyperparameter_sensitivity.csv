@@ -1,0 +1,6 @@
+Algorithm,Best profile by mean IGD,Mean IGD,Mean GD
+MOGA,mutation_low,1.48704,13.8074
+MOGA Bonus,mutation_low,0.098491,0.135039
+Crowding,mutation_low,0.103921,0.176920
+Crowding + epsilon,mutation_low,0.103940,0.184358
+Crowding + HV,mutation_low,0.103921,0.176840
